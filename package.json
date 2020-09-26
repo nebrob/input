@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Input normalizer for web interactions",
   "main": "dist/production/index.js",
-  "module": "src/index.js",
   "scripts": {
     "development": "parcel src/index.js -d dist/development",
     "production": "parcel build src/index.js -d dist/production",
