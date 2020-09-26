@@ -2,10 +2,15 @@
   "name": "@benrbnt/input",
   "version": "1.0.1",
   "description": "Input normalizer for web interactions",
-  "main": "dist/production/index.js",
+  "source": "src/index.js",
+  "main": "dist/input.js",
+  "unpkg": "dist/input.umd.js",
+  "module": "dist/input.module.js",
+  "esmodule": "dist/input.es.js",
+  "types": "dist/input.d.ts",
   "scripts": {
-    "development": "parcel src/index.js -d dist/development",
-    "production": "parcel build src/index.js -d dist/production",
+    "development": "microbundle watch",
+    "production": "microbundle",
     "dev": "npm run development",
     "prod": "npm run production"
   },
@@ -24,6 +29,10 @@
   },
   "homepage": "https://github.com/nebrob/input#readme",
   "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "microbundle": "^0.12.3",
     "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
