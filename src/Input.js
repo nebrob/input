@@ -68,9 +68,8 @@ export class Input extends EventEmitter {
     set shouldUpdate(state) {
         if (!state) {
             this._shouldUpdate = state;
-            window.cancelAnimationFrame(this._raf)
+            window.cancelAnimationFrame(this._raf);
         }
-        ;
 
         if (state && !this.shouldUpdate) {
             this._shouldUpdate = state;
@@ -142,11 +141,7 @@ export class Input extends EventEmitter {
             this.position.y += this.deltaPosition.y * _damper * deltaTime;
         }
 
-        if (this.position.distance(this.target) > 0) {
-            this.isMoving = true;
-        } else {
-            this.isMoving = false;
-        }
+        this.isMoving = this.position.distance(this.target) > 0;
     }
 
     onStart = (evt) => {
@@ -164,6 +159,7 @@ export class Input extends EventEmitter {
 
         if (this.dragging) {
             this.target.set(normalizedEvent.x, normalizedEvent.y).clamp(this.min, this.max)
+            this.position.assign(this.target);
             this.emit('drag');
         }
 

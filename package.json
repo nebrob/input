@@ -1,6 +1,6 @@
 {
   "name": "@benrbnt/input",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Input normalizer for web interactions",
   "source": "src/index.js",
   "main": "dist/input.js",
