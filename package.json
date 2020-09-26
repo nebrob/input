@@ -1,5 +1,5 @@
 {
-  "name": "@benrbnt/input",
+  "name": "@nebrob/input",
   "version": "1.0.0",
   "description": "Input normalizer for web interactions",
   "main": "dist/production/index.js",
