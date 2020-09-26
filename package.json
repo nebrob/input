@@ -1,0 +1,34 @@
+{
+  "name": "@nebrob/input",
+  "version": "1.0.0",
+  "description": "Input normalizer for web interactions",
+  "main": "dist/production/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "development": "parcel src/index.js -d dist/development",
+    "production": "parcel build src/index.js -d dist/production",
+    "dev": "npm run development",
+    "prod": "npm run production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nebrob/input.git"
+  },
+  "author": {
+    "name": "Benjamin Robinet",
+    "email": "benjamin@benrbnt.com",
+    "url": "https://benrbnt.com"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nebrob/input/issues"
+  },
+  "homepage": "https://github.com/nebrob/input#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "tiny-events": "^1.0.1"
+  }
+}
