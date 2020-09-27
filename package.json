@@ -9,7 +9,7 @@
   "esmodule": "dist/input.es.js",
   "types": "dist/input.d.ts",
   "scripts": {
-    "development": "microbundle watch",
+    "development": "parcel test/*.html",
     "production": "microbundle",
     "dev": "npm run development",
     "prod": "npm run production"
@@ -32,7 +32,9 @@
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
-    "microbundle": "^0.12.3"
+    "microbundle": "^0.12.3",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.11"
   },
   "dependencies": {
     "tiny-events": "^1.0.1"

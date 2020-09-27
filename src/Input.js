@@ -16,6 +16,7 @@ export class Input extends EventEmitter {
      * Input Helper
      *
      * @param {HTMLElement} element
+     * @param {{}} options
      */
     constructor(element, options = {}) {
         super();
@@ -24,7 +25,8 @@ export class Input extends EventEmitter {
         this.draggingThreshold = options.draggingThreshold || 10;
         this.damper = options.damper || 0.2;
         this.damperVelocity = options.damperVelocity || 0.05;
-        this.friction = options.friction || 0.25;
+        this.friction = options.friction || 0.2;
+        this.dragOnly = options.dragOnly || false;
 
         this._shouldUpdate = false;
         this._dragging = false;
@@ -34,15 +36,16 @@ export class Input extends EventEmitter {
 
         this.min = new Vec2(0, 0);
         this.max = new Vec2(element.offsetWidth, element.offsetHeight);
+        this.lastTarget = new Vec2(0, 0);
         this.startPosition = new Vec2(0, 0);
         this.endPosition = new Vec2(0, 0);
         this.deltaPosition = new Vec2(0, 0);
         this.deltaTarget = new Vec2(0, 0);
-        this.stoppingPosition = new Vec2(0, 0);
         this.target = new Vec2(0, 0);
         this.position = new Vec2(0, 0);
-        this.acceleration = new Vec2(0, 0);
-        this.direction = new Vec2(0, 0);
+        this.positionDirection = new Vec2(0, 0);
+        this.targetDirection = new Vec2(0, 0);
+        this.smoothedVelocity = new Vec2(0, 0);
         this.velocity = new Vec2(0, 0);
     }
 
@@ -98,8 +101,8 @@ export class Input extends EventEmitter {
     update = () => {
         if (this.shouldUpdate) this._raf = window.requestAnimationFrame(this.update);
 
-        const now = Date.now() / 1000 * 60;
-        const deltaTime = now - this.lastUpdate;
+        const now = Date.now();
+        const deltaTime = 1;
         this.lastUpdate = now;
 
         this.deltaPosition.set(
@@ -107,24 +110,37 @@ export class Input extends EventEmitter {
             this.target.y - this.position.y
         );
 
-        this.direction.set(
-            this.deltaPosition.x > 0 ? 1 : this.deltaPosition.x < 0 ? -1 : this.direction.x,
-            this.deltaPosition.y > 0 ? 1 : this.deltaPosition.y < 0 ? -1 : this.direction.y
+        this.deltaTarget.set(
+            this.target.x - this.lastTarget.x,
+            this.target.y - this.lastTarget.y,
+        )
+        this.lastTarget.assign(this.target);
+
+        this.positionDirection.set(
+            (this.deltaPosition.x > 0) ? 1 : ((this.deltaPosition.x < 0) ? -1 : 0),
+            (this.deltaPosition.y > 0) ? 1 : ((this.deltaPosition.y < 0) ? -1 : 0)
         );
 
-        this.velocity.set(
+        this.targetDirection.set(
+            (this.deltaTarget.x > 0) ? 1 : ((this.deltaTarget.x < 0) ? -1 : 0),
+            (this.deltaTarget.y > 0) ? 1 : ((this.deltaTarget.y < 0) ? -1 : 0)
+        );
+
+        this.smoothedVelocity.set(
             this.deltaPosition.x / deltaTime,
             this.deltaPosition.y / deltaTime
         );
 
-        this.acceleration.set(
-            this.velocity.x / deltaTime,
-            this.velocity.y / deltaTime
+        this.velocity.set(
+            this.deltaTarget.x,
+            this.deltaTarget.y
         );
+
+        // console.log(this.velocity);
 
         let _damper;
         if (this.dragging) {
-            _damper = 0.9;
+            _damper = 1;
         } else {
             _damper = this.damper;
         }
@@ -147,6 +163,9 @@ export class Input extends EventEmitter {
     onStart = (evt) => {
         const normalizedEvent = this.normalizeEvent(evt);
         this.startPosition.set(normalizedEvent.x, normalizedEvent.y);
+        this.target.assign(this.startPosition);
+        this.lastTarget.assign(this.target);
+        this.position.assign(this.target);
         this.dragging = true;
         this.shouldUpdate = true;
     }
@@ -157,7 +176,7 @@ export class Input extends EventEmitter {
     onMove = (evt) => {
         const normalizedEvent = this.normalizeEvent(evt);
 
-        if (this.dragging) {
+        if ((this.dragging && this.dragOnly) || this.dragOnly === false) {
             this.target.set(normalizedEvent.x, normalizedEvent.y).clamp(this.min, this.max)
             this.position.assign(this.target);
             this.emit('drag');
@@ -168,12 +187,12 @@ export class Input extends EventEmitter {
     }
 
     onEnd = () => {
-        this.stoppingPosition.set(
-            this.target.x + Math.pow(this.velocity.x, 2) / (2 * this.friction * 9.80) * this.direction.x,
-            this.target.y + Math.pow(this.velocity.y, 2) / (2 * this.friction * 9.80) * this.direction.y
+        this.endPosition.set(
+            this.target.x + Math.pow(this.velocity.x, 2) / (2 * this.friction * 9.80) * this.targetDirection.x,
+            this.target.y + Math.pow(this.velocity.y, 2) / (2 * this.friction * 9.80) * this.targetDirection.y
         );
 
-        this.target.assign(this.stoppingPosition).clamp(this.min, this.max);
+        this.target.assign(this.endPosition).clamp(this.min, this.max);
 
         this.dragging = false;
     }
